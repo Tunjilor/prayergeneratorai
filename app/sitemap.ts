@@ -1,27 +1,70 @@
-
-import type { MetadataRoute } from "next";
-
-const baseUrl = "https://prayergeneratorai.com";
-
-export default function sitemap(): MetadataRoute.Sitemap {
-  const routes = [
-    "",
-    "/prayer-for-anxiety",
-    "/prayer-for-healing",
-    "/prayer-for-family",
-    "/prayer-for-strength",
-    "/prayer-for-protection",
-    "/prayer-for-guidance",
-    "/morning-prayer",
-    "/prayer-before-sleep",
-    "/prayer-for-peace",
-    "/prayer-for-gratitude",
+export default function sitemap() {
+  return [
+    {
+      url: "https://prayergeneratorai.com",
+      lastModified: new Date(),
+      changeFrequency: "weekly",
+      priority: 1,
+    },
+    {
+      url: "https://prayergeneratorai.com/prayer-for-anxiety",
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.8,
+    },
+    {
+      url: "https://prayergeneratorai.com/prayer-for-healing",
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.8,
+    },
+    {
+      url: "https://prayergeneratorai.com/prayer-for-family",
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.8,
+    },
+    {
+      url: "https://prayergeneratorai.com/prayer-for-strength",
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.8,
+    },
+    {
+      url: "https://prayergeneratorai.com/prayer-for-protection",
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.8,
+    },
+    {
+      url: "https://prayergeneratorai.com/prayer-for-guidance",
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.8,
+    },
+    {
+      url: "https://prayergeneratorai.com/morning-prayer",
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.8,
+    },
+    {
+      url: "https://prayergeneratorai.com/prayer-before-sleep",
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.8,
+    },
+    {
+      url: "https://prayergeneratorai.com/prayer-for-peace",
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.8,
+    },
+    {
+      url: "https://prayergeneratorai.com/prayer-for-gratitude",
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.8,
+    },
   ];
-
-  return routes.map((route) => ({
-    url: `${baseUrl}${route}`,
-    lastModified: new Date(),
-    changeFrequency: route === "" ? "weekly" : "monthly",
-    priority: route === "" ? 1 : 0.8,
-  }));
 }
