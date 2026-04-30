@@ -119,7 +119,7 @@ export default function Home() {
 
         <p className="mt-6 max-w-2xl text-lg text-slate-300">
           Write what you need prayer for, and receive a thoughtful Christian
-          prayer you can read, reflect on, copy, and share.
+          prayer you can read, reflect on, copy, save, and share.
         </p>
 
         <p className="mt-3 text-sm text-slate-400">
@@ -183,15 +183,30 @@ export default function Home() {
               {prayer}
             </p>
 
-            <button
-              onClick={saveOnFaithCompanion}
-              disabled={saving}
-              className="mt-6 w-full rounded-2xl bg-emerald-500 px-6 py-4 text-center font-semibold text-slate-950 transition hover:bg-emerald-400 disabled:cursor-not-allowed disabled:opacity-60"
-            >
-              {saving
-                ? "Opening FaithCompanionAI..."
-                : "Save This Prayer on FaithCompanionAI"}
-            </button>
+            <div className="mt-8 rounded-3xl border border-emerald-400/20 bg-emerald-500/10 p-6 text-center">
+              <h3 className="text-2xl font-bold text-white">
+                Want to Save This Prayer?
+              </h3>
+
+              <p className="mt-3 text-slate-300">
+                Continue to FaithCompanionAI to save your prayer, access
+                devotionals, Bible tools, and more.
+              </p>
+
+              <button
+                onClick={saveOnFaithCompanion}
+                disabled={saving}
+                className="mt-5 w-full rounded-2xl bg-emerald-500 px-6 py-4 text-center font-semibold text-slate-950 transition hover:bg-emerald-400 disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {saving
+                  ? "Opening FaithCompanionAI..."
+                  : "Save This Prayer on FaithCompanionAI"}
+              </button>
+
+              <p className="mt-3 text-xs text-slate-400">
+                Free to start • Save prayers • Continue your faith journey
+              </p>
+            </div>
 
             <button
               onClick={copyPrayer}
@@ -206,11 +221,6 @@ export default function Home() {
             >
               Generate Another Prayer
             </button>
-
-            <p className="mt-4 text-center text-xs text-slate-500">
-              Saving opens FaithCompanionAI, where prayers can be stored with
-              your account.
-            </p>
           </div>
         )}
 
@@ -248,14 +258,21 @@ export default function Home() {
           </div>
 
           <h2 className="mt-8 text-2xl font-bold text-white">
-            Want to Save Your Prayers?
+            Continue Your Faith Journey
           </h2>
 
           <p className="mt-4 leading-7">
-            Use the save button after generating a prayer. It will send you to
-            FaithCompanionAI so you can continue with saved prayers, devotionals,
-            Bible tools, and more.
+            Prayer Generator AI helps you create a prayer quickly. FaithCompanionAI
+            helps you save prayers, explore devotionals, use Bible tools, and
+            return to your saved faith content anytime.
           </p>
+
+          <a
+            href="https://faithcompanionai.com/?from=prayergeneratorai"
+            className="mt-6 inline-block rounded-2xl bg-white px-6 py-4 font-semibold text-slate-950 transition hover:bg-slate-200"
+          >
+            Visit FaithCompanionAI
+          </a>
         </section>
       </section>
     </main>
