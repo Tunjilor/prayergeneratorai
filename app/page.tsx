@@ -18,26 +18,41 @@ export default function Home() {
   const [prayer, setPrayer] = useState("");
   const [loading, setLoading] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
 
-  function generatePrayer() {
+  async function generatePrayer() {
     if (!input.trim()) return;
 
     setLoading(true);
     setPrayer("");
     setCopied(false);
+    setError("");
 
-    setTimeout(() => {
-      setPrayer(`Heavenly Father,
+    try {
+      const response = await fetch("/api/prayer", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          topic: input.trim(),
+        }),
+      });
 
-I come before You today asking for Your presence, peace, and guidance regarding ${input.trim()}.
+      const data = await response.json();
 
-Please calm my heart, strengthen my faith, and help me trust Your timing. Give me wisdom for each step, courage for each challenge, and comfort in every uncertain moment.
+      if (!response.ok) {
+        setError(data?.error || "Unable to generate prayer.");
+        return;
+      }
 
-May Your love surround me, Your truth guide me, and Your peace fill my heart.
-
-In Jesus' name, Amen.`);
+      setPrayer(data.prayer);
+    } catch {
+      setError("Unable to connect. Please try again.");
+    } finally {
       setLoading(false);
-    }, 800);
+    }
   }
 
   async function copyPrayer() {
@@ -51,17 +66,36 @@ In Jesus' name, Amen.`);
     }, 2000);
   }
 
+  async function saveOnFaithCompanion() {
+    if (!prayer) return;
+
+    setSaving(true);
+
+    try {
+      await navigator.clipboard.writeText(prayer);
+    } catch {
+      // Continue even if clipboard fails.
+    }
+
+    const encodedPrayer = encodeURIComponent(prayer);
+    const encodedTopic = encodeURIComponent(input.trim());
+
+    window.location.href = `https://faithcompanionai.com/tools/prayer?from=prayergeneratorai&topic=${encodedTopic}&prayer=${encodedPrayer}`;
+  }
+
   function resetForm() {
     setInput("");
     setPrayer("");
     setCopied(false);
+    setSaving(false);
+    setError("");
   }
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-black text-white">
       <section className="mx-auto flex min-h-screen max-w-5xl flex-col items-center justify-center px-6 py-16 text-center">
         <p className="mb-4 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-slate-300">
-          Free Christian Prayer Generator
+          Free Christian AI Prayer Generator
         </p>
 
         <h1 className="max-w-3xl text-4xl font-bold tracking-tight sm:text-6xl">
@@ -70,7 +104,7 @@ In Jesus' name, Amen.`);
 
         <p className="mt-6 max-w-2xl text-lg text-slate-300">
           Write what you need prayer for, and receive a thoughtful Christian
-          prayer you can read, reflect on, and share.
+          prayer you can read, reflect on, copy, and share.
         </p>
 
         <p className="mt-3 text-sm text-slate-400">
@@ -85,6 +119,8 @@ In Jesus' name, Amen.`);
                 setInput(`Prayer for ${topic.toLowerCase()}`);
                 setPrayer("");
                 setCopied(false);
+                setSaving(false);
+                setError("");
               }}
               className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-slate-200 transition hover:bg-white/10"
             >
@@ -96,10 +132,18 @@ In Jesus' name, Amen.`);
         <div className="mt-8 w-full max-w-2xl rounded-3xl border border-white/10 bg-white/5 p-4 shadow-2xl">
           <textarea
             value={input}
-            onChange={(e) => setInput(e.target.value)}
+            onChange={(e) => {
+              setInput(e.target.value);
+              setError("");
+            }}
+            maxLength={500}
             placeholder="Example: I need prayer for peace, healing, my family, or guidance..."
             className="min-h-36 w-full resize-none rounded-2xl border border-white/10 bg-slate-900 p-4 text-white outline-none placeholder:text-slate-500"
           />
+
+          <div className="mt-2 text-right text-xs text-slate-500">
+            {input.length}/500
+          </div>
 
           <button
             onClick={generatePrayer}
@@ -108,6 +152,12 @@ In Jesus' name, Amen.`);
           >
             {loading ? "Generating Prayer..." : "Generate My Prayer"}
           </button>
+
+          {error && (
+            <p className="mt-4 rounded-2xl border border-red-400/20 bg-red-500/10 p-4 text-sm text-red-200">
+              {error}
+            </p>
+          )}
         </div>
 
         {prayer && (
@@ -119,8 +169,18 @@ In Jesus' name, Amen.`);
             </p>
 
             <button
+              onClick={saveOnFaithCompanion}
+              disabled={saving}
+              className="mt-6 w-full rounded-2xl bg-emerald-500 px-6 py-4 text-center font-semibold text-slate-950 transition hover:bg-emerald-400 disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              {saving
+                ? "Opening FaithCompanionAI..."
+                : "Save This Prayer on FaithCompanionAI"}
+            </button>
+
+            <button
               onClick={copyPrayer}
-              className="mt-6 w-full rounded-2xl bg-slate-700 px-6 py-4 text-center font-semibold text-white transition hover:bg-slate-600"
+              className="mt-3 w-full rounded-2xl bg-slate-700 px-6 py-4 text-center font-semibold text-white transition hover:bg-slate-600"
             >
               {copied ? "Prayer Copied!" : "Copy Prayer"}
             </button>
@@ -132,18 +192,16 @@ In Jesus' name, Amen.`);
               Generate Another Prayer
             </button>
 
-            <a
-              href="https://faithcompanionai.com/tools/prayer?from=prayergeneratorai"
-              className="mt-3 block rounded-2xl bg-white px-6 py-4 text-center font-semibold text-slate-950 transition hover:bg-slate-200"
-            >
-              Save & Access More on FaithCompanionAI
-            </a>
+            <p className="mt-4 text-center text-xs text-slate-500">
+              Saving opens FaithCompanionAI, where prayers can be stored with
+              your account.
+            </p>
           </div>
         )}
 
         <section className="mt-16 max-w-3xl text-left text-slate-300">
           <h2 className="text-2xl font-bold text-white">
-            How to Use This Prayer Generator
+            How to Use This AI Prayer Generator
           </h2>
 
           <p className="mt-4 leading-7">
@@ -168,8 +226,9 @@ In Jesus' name, Amen.`);
           </h2>
 
           <p className="mt-4 leading-7">
-            For saved prayers, devotionals, Bible tools, and more, continue to
-            FaithCompanionAI.
+            Use the save button after generating a prayer. It will send you to
+            FaithCompanionAI so you can continue with saved prayers, devotionals,
+            Bible tools, and more.
           </p>
         </section>
       </section>
