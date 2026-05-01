@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const topics = [
   "Anxiety",
@@ -27,6 +27,99 @@ const prayerPages = [
   { label: "Prayer for Gratitude", href: "/prayer-for-gratitude" },
 ];
 
+const allPrayerCategories = [
+  {
+    heading: "Relationships & Family",
+    links: [
+      { label: "Prayer for Family", href: "/prayer-for-family" },
+      { label: "Prayer for Marriage", href: "/prayer-for-marriage" },
+      { label: "Prayer for Husband", href: "/prayer-for-husband" },
+      { label: "Prayer for Wife", href: "/prayer-for-wife" },
+      { label: "Prayer for Son", href: "/prayer-for-son" },
+      { label: "Prayer for Daughter", href: "/prayer-for-daughter" },
+      { label: "Prayer for Children", href: "/prayer-for-children" },
+      { label: "Prayer for Parents", href: "/prayer-for-parents" },
+      { label: "Prayer for Baby", href: "/prayer-for-baby" },
+      { label: "Prayer for a Friend", href: "/prayer-for-friend" },
+      { label: "Prayer for Relationship", href: "/prayer-for-relationship" },
+      { label: "Prayer for Enemies", href: "/prayer-for-enemies" },
+    ],
+  },
+  {
+    heading: "Health & Healing",
+    links: [
+      { label: "Prayer for Healing", href: "/prayer-for-healing" },
+      { label: "Prayer for Anxiety", href: "/prayer-for-anxiety" },
+      { label: "Prayer for Anxiety and Fear", href: "/prayer-for-anxiety-and-fear" },
+      { label: "Prayer for Depression", href: "/prayer-for-depression" },
+      { label: "Prayer for Mental Health", href: "/prayer-for-mental-health" },
+      { label: "Prayer for Cancer", href: "/prayer-for-cancer" },
+      { label: "Prayer for Chronic Illness", href: "/prayer-for-chronic-illness" },
+      { label: "Prayer for Surgery", href: "/prayer-for-surgery" },
+      { label: "Prayer for Pregnancy", href: "/prayer-for-pregnancy" },
+      { label: "Prayer for Addiction Recovery", href: "/prayer-for-addiction-recovery" },
+      { label: "Prayer for Someone Dying", href: "/prayer-for-someone-dying" },
+    ],
+  },
+  {
+    heading: "Work & Finances",
+    links: [
+      { label: "Prayer for a Job", href: "/prayer-for-job" },
+      { label: "Prayer for a New Job", href: "/prayer-for-new-job" },
+      { label: "Prayer for Business", href: "/prayer-for-business" },
+      { label: "Prayer for Finances", href: "/prayer-for-finances" },
+      { label: "Prayer for Success", href: "/prayer-for-success" },
+      { label: "Prayer for Students and Exams", href: "/prayer-for-students-and-exams" },
+    ],
+  },
+  {
+    heading: "Faith & Spiritual Growth",
+    links: [
+      { label: "Prayer for Faith", href: "/prayer-for-faith" },
+      { label: "Prayer for Wisdom", href: "/prayer-for-wisdom" },
+      { label: "Prayer for Guidance", href: "/prayer-for-guidance" },
+      { label: "Prayer for Forgiveness", href: "/prayer-for-forgiveness" },
+      { label: "Prayer for Repentance", href: "/prayer-for-repentance" },
+      { label: "Prayer for Salvation", href: "/prayer-for-salvation" },
+      { label: "Prayer for the Holy Spirit", href: "/prayer-for-holy-spirit" },
+      { label: "Prayer for Revival", href: "/prayer-for-revival" },
+      { label: "Prayer for Church", href: "/prayer-for-church" },
+      { label: "Prayer for Pastor", href: "/prayer-for-pastor" },
+      { label: "Prayer for Courage", href: "/prayer-for-courage" },
+      { label: "Prayer for Patience", href: "/prayer-for-patience" },
+      { label: "Prayer for Hope", href: "/prayer-for-hope" },
+    ],
+  },
+  {
+    heading: "Life Situations",
+    links: [
+      { label: "Prayer for Strength", href: "/prayer-for-strength" },
+      { label: "Prayer for Peace", href: "/prayer-for-peace" },
+      { label: "Prayer for Protection", href: "/prayer-for-protection" },
+      { label: "Prayer for Gratitude", href: "/prayer-for-gratitude" },
+      { label: "Prayer for Grief and Loss", href: "/prayer-for-grief-and-loss" },
+      { label: "Prayer for Loneliness", href: "/prayer-for-loneliness" },
+      { label: "Prayer for Moving On", href: "/prayer-for-moving-on" },
+      { label: "Prayer for New Beginnings", href: "/prayer-for-new-beginnings" },
+      { label: "Prayer for Travel and Safety", href: "/prayer-for-travel-and-safety" },
+    ],
+  },
+  {
+    heading: "Daily & Seasonal",
+    links: [
+      { label: "Morning Prayer", href: "/morning-prayer" },
+      { label: "Evening Prayer", href: "/evening-prayer" },
+      { label: "Prayer Before Sleep", href: "/prayer-before-sleep" },
+      { label: "Prayer Before Meals", href: "/prayer-before-meals" },
+      { label: "Sunday Prayer", href: "/sunday-prayer" },
+      { label: "Prayer for Monday", href: "/prayer-for-monday" },
+      { label: "Christmas Prayer", href: "/christmas-prayer" },
+      { label: "Easter Prayer", href: "/easter-prayer" },
+      { label: "New Year Prayer", href: "/new-year-prayer" },
+    ],
+  },
+];
+
 type EmailStatus = "idle" | "sending" | "sent" | "error";
 
 export default function Home() {
@@ -38,6 +131,15 @@ export default function Home() {
   const [error, setError] = useState("");
   const [emailAddress, setEmailAddress] = useState("");
   const [emailStatus, setEmailStatus] = useState<EmailStatus>("idle");
+  const [showBackToTop, setShowBackToTop] = useState(false);
+
+  useEffect(() => {
+    function handleScroll() {
+      setShowBackToTop(window.scrollY > 400);
+    }
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   async function generatePrayer() {
     if (!input.trim()) return;
@@ -372,7 +474,37 @@ export default function Home() {
             ))}
           </div>
 
-          <h2 className="mt-8 text-2xl font-bold text-white">
+          <h2 className="mt-16 text-2xl font-bold text-white">
+            Browse All 60 Prayer Topics
+          </h2>
+
+          <p className="mt-4 leading-7">
+            Explore every prayer topic available — organized by category so you
+            can find exactly what you need.
+          </p>
+
+          <div className="mt-8 space-y-10">
+            {allPrayerCategories.map((category) => (
+              <div key={category.heading}>
+                <h3 className="mb-4 text-lg font-semibold text-emerald-400">
+                  {category.heading}
+                </h3>
+                <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                  {category.links.map((link) => (
+                    <Link
+                      key={link.href}
+                      href={link.href}
+                      className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white transition hover:bg-white/10"
+                    >
+                      {link.label}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <h2 className="mt-16 text-2xl font-bold text-white">
             Continue Your Faith Journey
           </h2>
 
@@ -390,6 +522,28 @@ export default function Home() {
           </a>
         </section>
       </section>
+
+      <button
+        onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+        aria-label="Back to top"
+        className={`fixed bottom-6 right-6 z-50 flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-slate-800 text-slate-300 shadow-lg transition-opacity duration-300 hover:bg-slate-700 hover:text-white ${
+          showBackToTop ? "opacity-100" : "pointer-events-none opacity-0"
+        }`}
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <path d="M18 15l-6-6-6 6" />
+        </svg>
+      </button>
     </main>
   );
 }
