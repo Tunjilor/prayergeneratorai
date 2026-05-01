@@ -27,6 +27,8 @@ const prayerPages = [
   { label: "Prayer for Gratitude", href: "/prayer-for-gratitude" },
 ];
 
+type EmailStatus = "idle" | "sending" | "sent" | "error";
+
 export default function Home() {
   const [input, setInput] = useState("");
   const [prayer, setPrayer] = useState("");
@@ -34,6 +36,8 @@ export default function Home() {
   const [copied, setCopied] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+  const [emailAddress, setEmailAddress] = useState("");
+  const [emailStatus, setEmailStatus] = useState<EmailStatus>("idle");
 
   async function generatePrayer() {
     if (!input.trim()) return;
@@ -43,6 +47,8 @@ export default function Home() {
     setCopied(false);
     setSaving(false);
     setError("");
+    setEmailAddress("");
+    setEmailStatus("idle");
 
     try {
       const response = await fetch("/api/prayer", {
@@ -81,6 +87,61 @@ export default function Home() {
     }, 2000);
   }
 
+  async function sendEmail() {
+    if (!emailAddress.trim() || !prayer) return;
+
+    setEmailStatus("sending");
+
+    try {
+      const res = await fetch("/api/email-prayer", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: emailAddress.trim(),
+          prayer,
+          topic: input.trim(),
+        }),
+      });
+
+      const data = await res.json();
+
+      if (data.fallback) {
+        // No API key configured — open mailto as fallback
+        const subject = encodeURIComponent(`Your prayer for ${input.trim()}`);
+        const body = encodeURIComponent(
+          `${prayer}\n\n---\nWant a verse and devotional to go with this prayer?\nVisit FaithCompanionAI: https://faithcompanionai.com/?from=prayergeneratorai-email`
+        );
+        window.location.href = `mailto:${emailAddress.trim()}?subject=${subject}&body=${body}`;
+        setEmailStatus("sent");
+        return;
+      }
+
+      if (res.ok) {
+        setEmailStatus("sent");
+      } else {
+        setEmailStatus("error");
+      }
+    } catch {
+      setEmailStatus("error");
+    }
+  }
+
+  function shareWhatsApp() {
+    const text = encodeURIComponent(
+      `${prayer}\n\n— Generated at PrayerGeneratorAI.com`
+    );
+    window.open(`https://wa.me/?text=${text}`, "_blank");
+  }
+
+  function shareFacebook() {
+    const url = encodeURIComponent("https://prayergeneratorai.com");
+    window.open(
+      `https://www.facebook.com/sharer/sharer.php?u=${url}`,
+      "_blank",
+      "width=600,height=400"
+    );
+  }
+
   async function saveOnFaithCompanion() {
     if (!prayer) return;
 
@@ -104,6 +165,8 @@ export default function Home() {
     setCopied(false);
     setSaving(false);
     setError("");
+    setEmailAddress("");
+    setEmailStatus("idle");
   }
 
   return (
@@ -136,6 +199,8 @@ export default function Home() {
                 setCopied(false);
                 setSaving(false);
                 setError("");
+                setEmailAddress("");
+                setEmailStatus("idle");
               }}
               className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-slate-200 transition hover:bg-white/10"
             >
@@ -183,37 +248,87 @@ export default function Home() {
               {prayer}
             </p>
 
-            <div className="mt-8 rounded-3xl border border-emerald-400/20 bg-emerald-500/10 p-6 text-center">
-              <h3 className="text-2xl font-bold text-white">
-                Want to Save This Prayer?
-              </h3>
+            {/* Share buttons */}
+            <div className="mt-6 flex flex-wrap gap-2">
+              <button
+                onClick={shareWhatsApp}
+                className="flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-slate-300 transition hover:bg-white/10"
+              >
+                <span>📱</span> WhatsApp
+              </button>
+              <button
+                onClick={shareFacebook}
+                className="flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-slate-300 transition hover:bg-white/10"
+              >
+                <span>📘</span> Facebook
+              </button>
+              <button
+                onClick={copyPrayer}
+                className="flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-slate-300 transition hover:bg-white/10"
+              >
+                <span>{copied ? "✓" : "📋"}</span>
+                {copied ? "Copied!" : "Copy"}
+              </button>
+            </div>
 
-              <p className="mt-3 text-slate-300">
-                Continue to FaithCompanionAI to save your prayer, access
-                devotionals, Bible tools, and more.
+            {/* Email capture */}
+            <div className="mt-5 rounded-2xl border border-white/10 bg-white/5 p-4">
+              <p className="mb-3 text-sm font-medium text-slate-300">
+                ✉️ Email me this prayer
+              </p>
+              {emailStatus === "sent" ? (
+                <p className="text-sm text-emerald-400">
+                  ✓ Prayer sent to your inbox!
+                </p>
+              ) : (
+                <div className="flex gap-2">
+                  <input
+                    type="email"
+                    value={emailAddress}
+                    onChange={(e) => {
+                      setEmailAddress(e.target.value);
+                      setEmailStatus("idle");
+                    }}
+                    onKeyDown={(e) => e.key === "Enter" && sendEmail()}
+                    placeholder="your@email.com"
+                    className="flex-1 rounded-xl border border-white/10 bg-slate-900 px-4 py-2 text-sm text-white outline-none placeholder:text-slate-500 focus:border-emerald-500/50"
+                  />
+                  <button
+                    onClick={sendEmail}
+                    disabled={emailStatus === "sending" || !emailAddress.trim()}
+                    className="rounded-xl bg-emerald-500 px-4 py-2 text-sm font-semibold text-slate-950 transition hover:bg-emerald-400 disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    {emailStatus === "sending" ? "Sending…" : "Send"}
+                  </button>
+                </div>
+              )}
+              {emailStatus === "error" && (
+                <p className="mt-2 text-xs text-red-400">
+                  Could not send. Please try again.
+                </p>
+              )}
+            </div>
+
+            {/* Warmer FaithCompanionAI CTA */}
+            <div className="mt-6 rounded-3xl border border-emerald-400/20 bg-emerald-500/10 p-6 text-center">
+              <p className="text-lg font-semibold text-white">
+                Want a verse and devotional to go with this prayer?
               </p>
 
               <button
                 onClick={saveOnFaithCompanion}
                 disabled={saving}
-                className="mt-5 w-full rounded-2xl bg-emerald-500 px-6 py-4 text-center font-semibold text-slate-950 transition hover:bg-emerald-400 disabled:cursor-not-allowed disabled:opacity-60"
+                className="mt-4 w-full rounded-2xl bg-emerald-500 px-6 py-4 text-center font-semibold text-slate-950 transition hover:bg-emerald-400 disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {saving
                   ? "Opening FaithCompanionAI..."
-                  : "Save This Prayer on FaithCompanionAI"}
+                  : "→ Continue your faith journey on FaithCompanionAI"}
               </button>
 
               <p className="mt-3 text-xs text-slate-400">
-                Free to start • Save prayers • Continue your faith journey
+                Free to start · Save prayers · Bible tools · Daily devotionals
               </p>
             </div>
-
-            <button
-              onClick={copyPrayer}
-              className="mt-3 w-full rounded-2xl bg-slate-700 px-6 py-4 text-center font-semibold text-white transition hover:bg-slate-600"
-            >
-              {copied ? "Prayer Copied!" : "Copy Prayer"}
-            </button>
 
             <button
               onClick={resetForm}
