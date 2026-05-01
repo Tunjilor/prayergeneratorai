@@ -61,12 +61,30 @@ export async function POST(req: Request) {
 
     const resend = new Resend(process.env.RESEND_API_KEY);
 
-    await resend.emails.send({
-      from: "Prayer Generator AI <support@faithcompanionai.com>",
-      to: [email],
-      subject: `Your prayer for ${topic}`,
-      html: emailHtml(prayer, topic),
-    });
+    const tasks: Promise<unknown>[] = [
+      resend.emails.send({
+        from: "Prayer Generator AI <support@faithcompanionai.com>",
+        to: [email],
+        subject: `Your prayer for ${topic}`,
+        html: emailHtml(prayer, topic),
+      }),
+    ];
+
+    if (process.env.RESEND_AUDIENCE_ID) {
+      tasks.push(
+        resend.contacts.create({
+          audienceId: process.env.RESEND_AUDIENCE_ID,
+          email,
+          unsubscribed: false,
+        })
+      );
+    }
+
+    const [emailResult] = await Promise.allSettled(tasks);
+
+    if (emailResult.status === "rejected") {
+      throw emailResult.reason;
+    }
 
     return NextResponse.json({ success: true });
   } catch (error) {
