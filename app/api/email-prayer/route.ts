@@ -62,7 +62,7 @@ export async function POST(req: Request) {
     const resend = new Resend(process.env.RESEND_API_KEY);
 
     await resend.emails.send({
-      from: "Prayer Generator AI <prayer@prayergeneratorai.com>",
+      from: "Prayer Generator AI <support@faithcompanionai.com>",
       to: [email],
       subject: `Your prayer for ${topic}`,
       html: emailHtml(prayer, topic),
