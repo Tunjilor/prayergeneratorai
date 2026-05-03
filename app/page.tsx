@@ -489,6 +489,25 @@ export default function Home() {
             ))}
           </div>
 
+          <div className="mt-16 rounded-3xl border border-white/10 bg-gradient-to-br from-slate-800/60 to-slate-900/60 px-8 py-10 text-center">
+            <p className="text-sm font-semibold uppercase tracking-widest text-emerald-400">
+              Ready to go deeper?
+            </p>
+            <h2 className="mt-3 text-2xl font-bold text-white">
+              Save Your Prayers. Build Your Faith.
+            </h2>
+            <p className="mt-4 leading-7 text-slate-300">
+              FaithCompanionAI lets you save prayers, track your faith journey,
+              and access devotionals and Bible tools anytime.
+            </p>
+            <a
+              href="https://faithcompanionai.com"
+              className="mt-6 inline-block rounded-2xl bg-white px-6 py-4 font-semibold text-slate-950 transition hover:bg-slate-200"
+            >
+              Start Free on FaithCompanionAI
+            </a>
+          </div>
+
           <h2 className="mt-16 text-2xl font-bold text-white">
             Browse All 60 Prayer Topics
           </h2>
