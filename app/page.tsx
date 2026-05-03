@@ -514,26 +514,40 @@ export default function Home() {
             return to your saved faith content anytime.
           </p>
 
-          <a
-            href="https://faithcompanionai.com/?from=prayergeneratorai"
-            className="mt-6 inline-block rounded-2xl bg-white px-6 py-4 font-semibold text-slate-950 transition hover:bg-slate-200"
-          >
-            Visit FaithCompanionAI
-          </a>
+          <div className="mt-6 flex flex-wrap gap-4">
+            <a
+              href="https://faithcompanionai.com/?from=prayergeneratorai"
+              className="inline-block rounded-2xl bg-white px-6 py-4 font-semibold text-slate-950 transition hover:bg-slate-200"
+            >
+              Visit FaithCompanionAI
+            </a>
+            <a
+              href="https://tithecalculatorai.com"
+              className="inline-block rounded-2xl bg-white px-6 py-4 font-semibold text-slate-950 transition hover:bg-slate-200"
+            >
+              Calculate Your Tithe
+            </a>
+            <a
+              href="https://bibleversegeneratorai.com"
+              className="inline-block rounded-2xl bg-white px-6 py-4 font-semibold text-slate-950 transition hover:bg-slate-200"
+            >
+              Find Bible Verses
+            </a>
+          </div>
         </section>
       </section>
 
       <button
         onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
         aria-label="Back to top"
-        className={`fixed bottom-6 right-6 z-50 flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-slate-800 text-slate-300 shadow-lg transition-opacity duration-300 hover:bg-slate-700 hover:text-white ${
+        className={`fixed bottom-6 right-6 z-50 flex flex-col items-center justify-center gap-0.5 rounded-2xl border border-white/10 bg-slate-800 px-3 py-2 text-slate-300 shadow-lg transition-opacity duration-300 hover:bg-slate-700 hover:text-white ${
           showBackToTop ? "opacity-100" : "pointer-events-none opacity-0"
         }`}
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          width="16"
-          height="16"
+          width="14"
+          height="14"
           viewBox="0 0 24 24"
           fill="none"
           stroke="currentColor"
@@ -543,6 +557,7 @@ export default function Home() {
         >
           <path d="M18 15l-6-6-6 6" />
         </svg>
+        <span className="text-[10px] font-medium leading-none">Top</span>
       </button>
     </main>
   );
